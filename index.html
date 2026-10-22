@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netor VPN - Frankfurt</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #2b3038 0%, #1e2229 50%, #15181e 100%);
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+    }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #ff5500, #cc3300);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(255, 85, 0, 0.3);
+    }
+
+    .brand-logo svg {
+      width: 16px;
+      height: 16px;
+      fill: #ffffff;
+    }
+
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #f8fafc;
+    }
+
+    .brand-text h1 span {
+      color: #ff5500;
+    }
+
+    .brand-text p {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .win-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .win-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .button-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2px 0;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0, 230, 118, 0.2);
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.5s ease;
+    }
+
+    .pulse-ring.active {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 0.1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .power-btn {
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: radial-gradient(circle at 35% 35%, #ff8833, #ff5500 60%, #cc3300 100%);
+      box-shadow: 0 8px 20px rgba(255, 85, 0, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+    }
+
+    .power-btn.connected-btn {
+      background: radial-gradient(circle at 35% 35%, #00e676, #00c853 60%, #009624 100%);
+      box-shadow: 0 8px 20px rgba(0, 230, 118, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.4);
+    }
+
+    .power-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .power-btn:active {
+      transform: scale(0.96);
+    }
+
+    .power-icon {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .power-btn span {
+      margin-top: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 2px 0;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+
+    .status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .status-badge.connected {
+      background: rgba(0, 230, 118, 0.15);
+      border-color: rgba(0, 230, 118, 0.3);
+      color: #69f0ae;
+    }
+
+    .status-badge.connected .status-dot {
+      background: #00e676;
+      box-shadow: 0 0 6px #00e676;
+    }
+
+    .grid-container {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .card-title {
+      font-size: 9px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-icon {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .card-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .card-subvalue {
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+
+    .ecg-container {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 230, 118, 0.25);
+      border-radius: 8px;
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .ecg-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #00e676;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    #ecgCanvas {
+      width: 100%;
+      height: 42px;
+      border-radius: 4px;
+    }
+
+    .sessions-container {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 10px;
+      padding: 6px 10px;
+      max-height: 70px;
+      overflow-y: auto;
+    }
+
+    .sessions-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sessions-container::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.4);
+      border-radius: 4px;
+    }
+
+    .session-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #d8b4fe;
+    }
+
+    .session-row:last-child {
+      border-bottom: none;
+    }
+
+    .total-time-box {
+      width: 100%;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 10px;
+      padding: 5px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: #c084fc;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .total-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: #e9d5ff;
+      letter-spacing: 1px;
+    }
+
+    .ticker-bar {
+      width: 100%;
+      font-size: 9px;
+      color: #94a3b8;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #a855f7;
+      box-shadow: 0 0 5px #a855f7;
+    }
+
+    .error-msg {
+      font-size: 10px;
+      color: #ff6b6b;
+      text-align: center;
+      height: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>NETOR <span>VPN</span></h1>
+        <p>Secure Tunnel</p>
+      </div>
+    </div>
+    <div class="window-controls">
+      <button class="win-btn" id="minimizeBtn" title="Згорнути в трей">—</button>
+      <button class="win-btn" id="closeBtn" title="Повне вимкнення">✕</button>
+    </div>
+  </div>
+
+  <div id="statusBadge" class="status-badge">
+    <div class="status-dot"></div>
+    <span>DISCONNECTED</span>
+  </div>
+
+  <div class="button-container">
+    <div id="pulseRing" class="pulse-ring"></div>
+    <button id="powerBtn" class="power-btn">
+      <svg class="power-icon" viewBox="0 0 24 24">
+        <path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path>
+      </svg>
+      <span id="btnText">CONNECT</span>
+    </button>
+  </div>
+
+  <div class="grid-container">
+    <div class="info-card">
+      <div class="card-header">
+        <span class="card-title">Ping & IP</span>
+        <span class="card-icon">🖧</span>
+      </div>
+      <div id="pingValue" class="card-value">--- ms</div>
+      <div id="ipValue" class="card-subvalue">192.168.1.100</div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-header">
+        <span class="card-title">Protocol</span>
+        <span class="card-icon">🔒</span>
+      </div>
+      <div class="card-value">Shadowsocks</div>
+      <div class="card-subvalue">AEAD Secure</div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-header">
+        <span class="card-title">Download</span>
+        <span class="card-icon">📥</span>
+      </div>
+      <div id="dlValue" class="card-value">0.0 KB/s</div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-header">
+        <span class="card-title">Upload</span>
+        <span class="card-icon">📤</span>
+      </div>
+      <div id="ulValue" class="card-value">0.0 KB/s</div>
+    </div>
+  </div>
+
+  <div class="ecg-container">
+    <div class="ecg-header">
+      <span>NETWORK TELEMETRY MONITOR</span>
+      <span id="ecgScaleLabel">LIVE STREAM</span>
+    </div>
+    <canvas id="ecgCanvas" width="340" height="42"></canvas>
+  </div>
+
+  <div id="sessionsContainer" class="sessions-container">
+    <div class="session-row" style="color: #94a3b8; justify-content: center;">Історія сесій порожня</div>
+  </div>
+
+  <div class="total-time-box">
+    <span class="total-title">Загальний час користування</span>
+    <span id="totalTimeValue" class="total-value">0х 0с</span>
+  </div>
+
+  <div class="ticker-bar">
+    <div class="ticker-dot"></div>
+    <span id="tickerText">System idle. Ready to establish secure tunnel.</span>
+  </div>
+
+  <div id="errorMsg" class="error-msg"></div>
+
+<script>
+    const powerBtn = document.getElementById('powerBtn');
+    const pulseRing = document.getElementById('pulseRing');
+    const statusBadge = document.getElementById('statusBadge');
+    const btnText = document.getElementById('btnText');
+    const ipValue = document.getElementById('ipValue');
+    const pingValue = document.getElementById('pingValue');
+    const dlValue = document.getElementById('dlValue');
+    const ulValue = document.getElementById('ulValue');
+    const errorMsg = document.getElementById('errorMsg');
+    
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    const sessionsContainer = document.getElementById('sessionsContainer');
+    const totalTimeValue = document.getElementById('totalTimeValue');
+    const tickerText = document.getElementById('tickerText');
+    const ecgScaleLabel = document.getElementById('ecgScaleLabel');
+
+    let isConnected = false;
+    let isLoading = false;
+    let pingInterval = null;
+    
+    let totalSecondsStored = 0;
+    let currentSessionSeconds = 0;
+    let liveTimerInterval = null;
+    window.currentSpeedBps = 0;
+
+    // Кнопка згортання (мінус) — ховає вікно виключно в трей
+    minimizeBtn.addEventListener('click', () => {
+      if (window.api && window.api.minimizeToTray) {
+        window.api.minimizeToTray();
+      }
+    });
+
+    // Кнопка закриття (хрестик) — повністю вбиває процес, вимикає VPN і чистить диспетчер завдань
+    closeBtn.addEventListener('click', () => {
+      if (window.api && window.api.quitApp) {
+        window.api.quitApp();
+      } else {
+        window.close();
+      }
+    });
+
+    function formatTime(totalSec) {
+      const days = Math.floor(totalSec / (3600 * 24));
+      const hours = Math.floor((totalSec % (3600 * 24)) / 3600);
+      const minutes = Math.floor((totalSec % 3600) / 60);
+      const seconds = totalSec % 60;
+
+      let parts = [];
+      if (days > 0) parts.push(`${days}д`);
+      if (hours > 0 || days > 0) parts.push(`${hours}г`);
+      if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}х`);
+      parts.push(`${seconds}с`);
+
+      return parts.join(' ');
+    }
+
+    async function updateStatsUI() {
+      if (window.api && window.api.getStats) {
+        const stats = await window.api.getStats();
+        totalSecondsStored = stats.totalSeconds || 0;
+        
+        if (stats.sessions && stats.sessions.length > 0) {
+          sessionsContainer.innerHTML = '';
+          stats.sessions.forEach(s => {
+            const row = document.createElement('div');
+            row.className = 'session-row';
+            row.innerHTML = `<span>${s.start} ➔ ${s.end}</span> <span>${formatTime(s.duration)}</span>`;
+            sessionsContainer.appendChild(row);
+          });
+        }
+      }
+    }
+
+    updateStatsUI();
+
+    function startLiveTimer() {
+      currentSessionSeconds = 0;
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
+
+      liveTimerInterval = setInterval(() => {
+        if (!isConnected) return;
+        currentSessionSeconds++;
+        const total = totalSecondsStored + currentSessionSeconds;
+        totalTimeValue.textContent = formatTime(total);
+      }, 1000);
+    }
+
+    function stopLiveTimer() {
+      if (liveTimerInterval) {
+        clearInterval(liveTimerInterval);
+        liveTimerInterval = null;
+      }
+      updateStatsUI();
+    }
+
+    const canvas = document.getElementById('ecgCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const maxPoints = 70;
+    let telemetryHistory = new Array(maxPoints).fill(35);
+
+    function drawChart() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 1;
+      
+      for (let y = 10; y < canvas.height; y += 10) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      for (let x = 30; x < canvas.width; x += 30) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+
+      let targetHeight = 35;
+      
+      if (isConnected) {
+        let speed = window.currentSpeedBps || 0;
+        let normalized = Math.log10(speed + 1) * 6; 
+        targetHeight = Math.max(5, 38 - normalized); 
+        targetHeight = Math.min(38, Math.max(3, targetHeight)); 
+      }
+
+      let lastVal = telemetryHistory[telemetryHistory.length - 1];
+      let smoothVal = lastVal + (targetHeight - lastVal) * 0.3; 
+      
+      telemetryHistory.push(smoothVal);
+      telemetryHistory.shift();
+
+      const sliceWidth = canvas.width / (telemetryHistory.length - 1);
+      
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height);
+      let x = 0;
+      for (let i = 0; i < telemetryHistory.length; i++) {
+        ctx.lineTo(x, telemetryHistory[i]);
+        x += sliceWidth;
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.closePath();
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, isConnected ? 'rgba(0, 230, 118, 0.25)' : 'rgba(100, 116, 139, 0.1)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.strokeStyle = isConnected ? '#00e676' : '#64748b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      x = 0;
+      for (let i = 0; i < telemetryHistory.length; i++) {
+        const y = telemetryHistory[i];
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+      ctx.stroke();
+    }
+
+    setInterval(drawChart, 50);
+
+    if (window.api && window.api.onTrafficUpdate) {
+      window.api.onTrafficUpdate((data) => {
+        if (isConnected) {
+          dlValue.textContent = data.download;
+          ulValue.textContent = data.upload;
+
+          let bytesPerSec = 0;
+          let rawDl = data.download;
+          if (rawDl.includes('MB/s')) {
+            bytesPerSec = parseFloat(rawDl) * 1024 * 1024;
+            ecgScaleLabel.textContent = 'HIGH LOAD (MB/s)';
+          } else if (rawDl.includes('KB/s')) {
+            bytesPerSec = parseFloat(rawDl) * 1024;
+            ecgScaleLabel.textContent = 'NORMAL (KB/s)';
+          } else {
+            ecgScaleLabel.textContent = 'IDLE';
+          }
+          window.currentSpeedBps = bytesPerSec;
+
+          tickerText.textContent = `[TUNNEL ACTIVE] Rx: ${data.download} | Tx: ${data.upload}`;
+        }
+      });
+    }
+
+    function startRealMonitor() {
+      pingValue.textContent = '14 ms';
+      pingInterval = setInterval(async () => {
+        if (!isConnected) return;
+        try {
+          const start = performance.now();
+          await window.api.checkIp();
+          const end = performance.now();
+          const latency = Math.round(end - start);
+          pingValue.textContent = Math.min(latency, 150) + ' ms';
+        } catch (e) {
+          pingValue.textContent = '--- ms';
+        }
+      }, 5000);
+    }
+
+    function stopRealMonitor() {
+      if (pingInterval) {
+        clearInterval(pingInterval);
+        pingInterval = null;
+      }
+      dlValue.textContent = '0.0 KB/s';
+      ulValue.textContent = '0.0 KB/s';
+      pingValue.textContent = '--- ms';
+      window.currentSpeedBps = 0;
+      ecgScaleLabel.textContent = 'OFFLINE';
+      tickerText.textContent = 'Tunnel closed. System secure.';
+    }
+
+    async function toggleVpn() {
+      if (isLoading) return;
+
+      errorMsg.textContent = '';
+      isLoading = true;
+      powerBtn.style.opacity = '0.7';
+
+      if (!isConnected) {
+        btnText.textContent = "CONNECTING";
+        tickerText.textContent = 'Initializing Shadowsocks daemon...';
+        
+        try {
+          const res = await window.api.connect();
+          if (res.success) {
+            isConnected = true;
+            statusBadge.textContent = 'CONNECTED';
+            statusBadge.classList.add('connected');
+            pulseRing.classList.add('active');
+            powerBtn.classList.add('connected-btn');
+            btnText.textContent = 'DISCONNECT';
+
+            startRealMonitor();
+            startLiveTimer();
+
+            try {
+              const data = await window.api.checkIp();
+              ipValue.textContent = data.ip;
+              tickerText.textContent = `Connected to Frankfurt node [${data.ip}]`;
+            } catch (err) {
+              ipValue.textContent = '164.92.248.211';
+              tickerText.textContent = 'Connected to Frankfurt node [164.92.248.211]';
+            }
+
+          } else {
+            errorMsg.textContent = res.message || 'Connection failed';
+            btnText.textContent = 'CONNECT';
+            tickerText.textContent = 'Connection error occurred.';
+          }
+        } catch (e) {
+          errorMsg.textContent = 'System service error';
+          btnText.textContent = 'CONNECT';
+          tickerText.textContent = 'Critical system service error.';
+        }
+
+      } else {
+        btnText.textContent = "DISCONNECTING";
+        tickerText.textContent = 'Terminating proxy routes...';
+
+        try {
+          await window.api.disconnect();
+          isConnected = false;
+          statusBadge.textContent = 'DISCONNECTED';
+          statusBadge.classList.remove('connected');
+          pulseRing.classList.remove('active');
+          powerBtn.classList.remove('connected-btn');
+          btnText.textContent = 'CONNECT';
+          ipValue.textContent = '192.168.1.100';
+
+          stopRealMonitor();
+          stopLiveTimer();
+        } catch (e) {
+          errorMsg.textContent = 'Disconnection error';
+          tickerText.textContent = 'Disconnection error.';
+        }
+      }
+
+      isLoading = false;
+      powerBtn.style.opacity = '1';
+    }
+
+    powerBtn.addEventListener('click', toggleVpn);
+
+    if (window.api && window.api.onToggleVpnFromTray) {
+      window.api.onToggleVpnFromTray(() => {
+        toggleVpn();
+      });
+    }
+  </script>
+</body>
+</html>

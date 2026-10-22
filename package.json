@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json.schemastore.org/package",
+  "name": "netor-vpn",
+  "version": "1.0.0",
+  "description": "Netor VPN Desktop Client",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --dir && copy Shadowsocks.exe dist\\win-unpacked\\ && copy gui-config.json dist\\win-unpacked\\ && copy vpn-de-1.conf dist\\win-unpacked\\"
+  },
+  "build": {
+    "appId": "com.netor.vpn",
+    "productName": "Netor VPN",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "dir",
+      "icon": "icon.ico"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "icon.ico",
+      "Shadowsocks.exe",
+      "gui-config.json",
+      "vpn-de-1.conf",
+      "node_modules/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "socks-proxy-agent": "^8.0.5"
+  }
+}
